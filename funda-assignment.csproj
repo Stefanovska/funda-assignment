@@ -8,4 +8,10 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
+  <ItemGroup>
+    <None Remove="Views\Agents\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Agents\" />
+  </ItemGroup>
 </Project>
