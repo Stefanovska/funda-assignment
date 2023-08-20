@@ -1,7 +1,15 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using funda_assignment.Services;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IAgentsService, AgentsService>();
+
+builder.Services.AddSingleton<PeriodicHostedService>();
+builder.Services.AddHostedService(
+    provider => provider.GetRequiredService<PeriodicHostedService>()
+);
 
 var app = builder.Build();
 
@@ -10,6 +18,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -19,6 +28,11 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapGet("/background", (PeriodicHostedService service) =>
+{
+    return new PeriodicHostedServiceState();
+});
 
 app.Run();
 
