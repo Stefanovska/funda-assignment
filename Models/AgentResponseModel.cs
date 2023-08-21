@@ -5,4 +5,6 @@ public class AgentResponseModel
     public int TotaalAantalObjecten { get; set; }
 
     public List<PropertyInfoResponseModel> Objects { get; set; }
+
+    public AgentResponsePagingModel Paging { get; set; }
 }

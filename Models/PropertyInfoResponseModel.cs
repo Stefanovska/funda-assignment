@@ -6,5 +6,5 @@ public class PropertyInfoResponseModel
 
     public int MakelaarId { get; set; }
 
-    public string? MakelaarName { get; set; }
+    public string? MakelaarNaam { get; set; }
 }
