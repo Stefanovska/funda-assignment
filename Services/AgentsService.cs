@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using funda_assignment.Models;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 
 namespace funda_assignment.Services
@@ -9,18 +10,27 @@ namespace funda_assignment.Services
         private readonly IConfiguration _configuration;
         private readonly ILogger<AgentsService> _logger;
         private readonly HttpClient _httpClient;
+        private readonly IMemoryCache _memoryCache;
 
         public AgentsService(
             ILogger<AgentsService> logger,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IMemoryCache memoryCache
         )
 		{
             _logger = logger;
             _configuration = configuration;
+            _memoryCache = memoryCache;
             _httpClient = new()
             {
                 BaseAddress = new Uri($"{_configuration["FUNDA_BASE_API_URL"]}/feeds/Aanbod.svc/json/{_configuration["FUNDA_API_KEY"]}/"),
             };
+        }
+
+        public List<Agent> ListAgents()
+        {
+            var agents = _memoryCache.Get("AGENTS");
+            return (List<Agent>)_memoryCache.Get("AGENTS");
         }
 
         public async Task FetchAgents()
@@ -67,27 +77,33 @@ namespace funda_assignment.Services
                     }
                 }
 
-                var propertiesGroupedByAgentId = allProperties
+                var agents = allProperties
                     .GroupBy(p => new { p.MakelaarId, p.MakelaarNaam })
-                    .Select(g => new
-                    {
-                        Id = g.Key.MakelaarId,
-                        Name = g.Key.MakelaarNaam,
-                        NumberOfProperties = g.Count()
-                    })
+                    .Select(g => new Agent(
+                    
+                        g.Key.MakelaarId,
+                        g.Key.MakelaarNaam,
+                        g.Count()
+                    ))
                     .OrderByDescending(a => a.NumberOfProperties)
-                    .Take(10);
+                    .Take(10).ToList();
+
+                _memoryCache.Set("AGENTS", agents);
+
             } catch(Exception ex)
             {
                 _logger.LogInformation($"Error {ex.Message}");
             }
             
         }
+
+        
     }
 
     public interface IAgentsService
     {
         Task FetchAgents();
+        List<Agent> ListAgents();
     }
 }
 

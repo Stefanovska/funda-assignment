@@ -10,6 +10,7 @@ builder.Services.AddSingleton<PeriodicHostedService>();
 builder.Services.AddHostedService(
     provider => provider.GetRequiredService<PeriodicHostedService>()
 );
+builder.Services.AddSingleton<funda_assignment.MyMemoryCache>();
 
 var app = builder.Build();
 
