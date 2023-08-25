@@ -5,40 +5,44 @@
 
 @if (Model.Count() == 0)
 {
-    <h1>Fetching agents in progress.. Try again</h1>
-    <br/>
+    <h1>Fetching agents in progress... Please try again!</h1>
+    <br />
 }
 
-<h1>Agents with the most properties for sale</h1>
+@if (Model.Count() > 0)
+{
 
-<table>
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumberOfProperties)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var b in Model)
-        {
+    <h1>Agents with the most properties for sale</h1>
+
+    <table>
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => b.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => b.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => b.NumberOfProperties)
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NumberOfProperties)
+                </th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var b in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => b.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => b.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => b.NumberOfProperties)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

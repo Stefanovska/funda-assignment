@@ -1,8 +1,10 @@
-﻿namespace funda_assignment.Services
+﻿using funda_assignment.Utils;
+
+namespace funda_assignment.Services
 {
     class PeriodicHostedService : BackgroundService
     {
-        private readonly TimeSpan _period = TimeSpan.FromHours(1);
+        private readonly TimeSpan _period = TimeSpan.FromHours(Constants.PERIODIC_SERVICE_HOURS_INTERVAL);
         private readonly IServiceScopeFactory _factory;
         private readonly ILogger<PeriodicHostedService> _logger;
 
@@ -44,7 +46,7 @@
                     }
                     catch (Exception ex)
                     {
-                    _logger.LogError ($"{ex.Message}");
+                        _logger.LogError ($"{ex.Message}");
                     }
                 }
             }
