@@ -15,10 +15,22 @@ namespace funda_assignment.Controllers
             this.agentsService = agentsService;
         }
 
-        // GET: /agents/
         public IActionResult Index()
         {
+            return View();
+        }
+
+        [Route("agents")]
+        public IActionResult GetTopTenAgents()
+        {
             List<Agent> agents = agentsService.ListAgents();
+            return View(agents);
+        }
+
+        [Route("agents/garden")]
+        public IActionResult GetTopTenAgentsWithGarden()
+        {
+            List<Agent> agents = agentsService.ListAgentsWithGarden();
             return View(agents);
         }
     }

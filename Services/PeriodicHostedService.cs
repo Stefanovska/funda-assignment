@@ -1,4 +1,7 @@
-﻿namespace funda_assignment.Services
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
+
+namespace funda_assignment.Services
 {
     class PeriodicHostedService : BackgroundService
     {
@@ -24,28 +27,29 @@
                 _logger.LogInformation($"Executed PeriodicHostedService");
                 await using AsyncServiceScope asyncScope = _factory.CreateAsyncScope();
                 IAgentsService agentsService = asyncScope.ServiceProvider.GetRequiredService<IAgentsService>();
-                await agentsService.FetchAgents();
+                await agentsService.SaveAgentsWithMostProperties();
+                await agentsService.SaveAgentsWihMostPropertiesWithGarden();
             }
 
-            while (
-                !stoppingToken.IsCancellationRequested &&
-                await timer.WaitForNextTickAsync(stoppingToken)
-            )
-            {
-                try
+                while (
+                    !stoppingToken.IsCancellationRequested &&
+                    await timer.WaitForNextTickAsync(stoppingToken)
+                )
                 {
-                    
-                    _logger.LogInformation($"Executed PeriodicHostedService");
-                    await using AsyncServiceScope asyncScope = _factory.CreateAsyncScope();
-                    IAgentsService agentsService = asyncScope.ServiceProvider.GetRequiredService<IAgentsService>();
-                    await agentsService.FetchAgents();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogInformation($"{ex.Message}");
+                    try
+                    {
+
+                        _logger.LogInformation($"Executed PeriodicHostedService");
+                        await using AsyncServiceScope asyncScope = _factory.CreateAsyncScope();
+                        IAgentsService agentsService = asyncScope.ServiceProvider.GetRequiredService<IAgentsService>();
+                        await agentsService.SaveAgentsWithMostProperties();
+                        await agentsService.SaveAgentsWihMostPropertiesWithGarden();
+                    }
+                    catch (Exception ex)
+                    {
+                    _logger.LogError ($"{ex.Message}");
+                    }
                 }
             }
         }
     }
-}
-

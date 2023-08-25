@@ -1,12 +1,11 @@
-﻿using System.Text.RegularExpressions;
-using funda_assignment.Models;
+﻿using funda_assignment.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 
 namespace funda_assignment.Services
 {
-	public class AgentsService : IAgentsService
-	{
+    public class AgentsService : IAgentsService
+    {
         private readonly IConfiguration _configuration;
         private readonly ILogger<AgentsService> _logger;
         private readonly HttpClient _httpClient;
@@ -17,7 +16,7 @@ namespace funda_assignment.Services
             IConfiguration configuration,
             IMemoryCache memoryCache
         )
-		{
+        {
             _logger = logger;
             _configuration = configuration;
             _memoryCache = memoryCache;
@@ -33,7 +32,13 @@ namespace funda_assignment.Services
             return (List<Agent>)_memoryCache.Get("AGENTS");
         }
 
-        public async Task FetchAgents()
+        public List<Agent> ListAgentsWithGarden()
+        {
+            var agents = _memoryCache.Get("AGENTS_WITH_TUIN");
+            return (List<Agent>)_memoryCache.Get("AGENTS_WITH_TUIN");
+        }
+
+        public async Task<List<Agent>> FetchAgents(string requestUri)
         {
             try
             {
@@ -50,7 +55,7 @@ namespace funda_assignment.Services
                 {
                     if (requestsSent < 100 && DateTime.Now < start.AddMinutes(1))
                     {
-                        using HttpResponseMessage response = await _httpClient.GetAsync($"?type=koop&zo=/amsterdam/&page={page}&pagesize=25");
+                        using HttpResponseMessage response = await _httpClient.GetAsync(requestUri + $"&page={page}&pagesize=25");
                         HttpResponseMessage responseMessage = response.EnsureSuccessStatusCode();
                         requestsSent++;
 
@@ -77,33 +82,44 @@ namespace funda_assignment.Services
                     }
                 }
 
-                var agents = allProperties
+                return allProperties
                     .GroupBy(p => new { p.MakelaarId, p.MakelaarNaam })
                     .Select(g => new Agent(
-                    
+
                         g.Key.MakelaarId,
                         g.Key.MakelaarNaam,
                         g.Count()
-                    ))
-                    .OrderByDescending(a => a.NumberOfProperties)
-                    .Take(10).ToList();
+                    )).ToList() ?? new List<Agent>();
 
-                _memoryCache.Set("AGENTS", agents);
-
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogInformation($"Error {ex.Message}");
+                return new List<Agent>();
             }
-            
         }
 
-        
-    }
+        public async Task SaveAgentsWithMostProperties()
+        {
+            var agents = await FetchAgents("?type=koop&zo=/amsterdam/");
+            agents = agents.OrderByDescending(a => a.NumberOfProperties).Take(10).ToList();
+            _memoryCache.Set("AGENTS", agents);
+        }
 
-    public interface IAgentsService
-    {
-        Task FetchAgents();
-        List<Agent> ListAgents();
+        public async Task SaveAgentsWihMostPropertiesWithGarden()
+        {
+            var agents = await FetchAgents("?type=koop&zo=/amsterdam/tuin");
+            agents = agents.OrderByDescending(a => a.NumberOfProperties).Take(10).ToList();
+            _memoryCache.Set("AGENTS_WITH_TUIN", agents);
+        }
     }
 }
 
+public interface IAgentsService
+{
+    Task<List<Agent>> FetchAgents(string requestUri);
+    List<Agent> ListAgents();
+    List<Agent> ListAgentsWithGarden();
+    Task SaveAgentsWithMostProperties();
+    Task SaveAgentsWihMostPropertiesWithGarden();
+}
