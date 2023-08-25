@@ -3,6 +3,12 @@
     ViewData["Title"] = "Agents with garden";
 }
 
+@if (Model.Count() == 0)
+{
+    <h1>Fetching agents in progress.. Try again</h1>
+    <br />
+}
+
 <h1>Agents with the most properties for sale with a garden</h1>
 
 <table>

@@ -23,14 +23,14 @@ namespace funda_assignment.Controllers
         [Route("agents")]
         public IActionResult GetTopTenAgents()
         {
-            List<Agent> agents = agentsService.ListAgents();
+            List<Agent> agents = agentsService.ListAgents() ?? new List<Agent>();
             return View(agents);
         }
 
         [Route("agents/garden")]
         public IActionResult GetTopTenAgentsWithGarden()
         {
-            List<Agent> agents = agentsService.ListAgentsWithGarden();
+            List<Agent> agents = agentsService.ListAgentsWithGarden() ?? new List<Agent>();
             return View(agents);
         }
     }
