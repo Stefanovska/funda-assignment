@@ -1,4 +1,5 @@
 ﻿using funda_assignment.Models;
+using funda_assignment.Utils;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 
@@ -28,14 +29,12 @@ namespace funda_assignment.Services
 
         public List<Agent> ListAgents()
         {
-            var agents = _memoryCache.Get("AGENTS");
-            return (List<Agent>)_memoryCache.Get("AGENTS");
+            return (List<Agent>)_memoryCache.Get(Constants.AGENTS_MEMORY_CACHE_KEY);
         }
 
         public List<Agent> ListAgentsWithGarden()
         {
-            var agents = _memoryCache.Get("AGENTS_WITH_TUIN");
-            return (List<Agent>)_memoryCache.Get("AGENTS_WITH_TUIN");
+            return (List<Agent>)_memoryCache.Get(Constants.AGENTS_WITH_GARDEN_MEMORY_CACHE_KEY);
         }
 
         public async Task<List<Agent>> FetchAgents(string requestUri)
@@ -103,14 +102,14 @@ namespace funda_assignment.Services
         {
             var agents = await FetchAgents("?type=koop&zo=/amsterdam/");
             agents = agents.OrderByDescending(a => a.NumberOfProperties).Take(10).ToList();
-            _memoryCache.Set("AGENTS", agents);
+            _memoryCache.Set(Constants.AGENTS_MEMORY_CACHE_KEY, agents);
         }
 
         public async Task SaveAgentsWihMostPropertiesWithGarden()
         {
             var agents = await FetchAgents("?type=koop&zo=/amsterdam/tuin");
             agents = agents.OrderByDescending(a => a.NumberOfProperties).Take(10).ToList();
-            _memoryCache.Set("AGENTS_WITH_TUIN", agents);
+            _memoryCache.Set(Constants.AGENTS_WITH_GARDEN_MEMORY_CACHE_KEY, agents);
         }
     }
 }

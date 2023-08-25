@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Caching.Memory;
-
-namespace funda_assignment.Services
+﻿namespace funda_assignment.Services
 {
     class PeriodicHostedService : BackgroundService
     {
